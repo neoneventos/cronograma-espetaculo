@@ -328,15 +328,16 @@ function unlock(){var el=$('pin');var v=el?el.value.replace(/\s/g,''):'';if(!v)r
 function lock(){PIN='';EDIT=false;try{localStorage.removeItem('tecpin')}catch(e){}UNL=false;render()}
 var UNL=false;
 function lockBox(){
-  var st=h('div',{class:'small muted'},LIVE?'● Ao vivo':'○ Sem conexão: mostrando o último estado recebido');
-  var c=h('div',{class:'card',style:'margin-top:10px'});
-  if(EDIT){c.appendChild(h('div',{class:'small'},h('b',null,'Marcação liberada neste aparelho.'),' Quem abre o link vê o que você marca, na hora. '));c.appendChild(h('div',{class:'tbar'},h('button',{type:'button',onclick:lock},'Bloquear marcação')))}
-  else{c.appendChild(h('div',{class:'small'},'Você está só acompanhando: os itens são marcados pela equipe da Neon e aparecem aqui na hora.'));
-    if(UNL){var inp=h('input',{id:'pin',class:'filter',type:'password',inputmode:'numeric',autocomplete:'off',placeholder:'PIN',style:'margin-top:8px'});inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')unlock()});
-      c.appendChild(inp);c.appendChild(h('div',{class:'tbar',style:'margin-top:8px'},h('button',{type:'button',onclick:unlock},'Liberar'),h('button',{type:'button',onclick:function(){UNL=false;render()}},'Cancelar')))}
-    else c.appendChild(h('div',{class:'tbar',style:'margin-top:8px'},h('button',{type:'button',onclick:function(){UNL=true;render();var el=$('pin');if(el)el.focus()}},'Tenho o PIN')))}
-  if(WERR)c.appendChild(h('div',{class:'small',style:'margin-top:6px;color:var(--warn)'},WERR));
-  c.appendChild(st);return c}
+  var dot=h('span',{style:'color:'+(LIVE?'var(--ok)':'var(--muted)')+';font-size:14px;margin-right:6px'},LIVE?'●':'○');
+  var sm='font:600 12px var(--f-body);padding:5px 10px;border-radius:99px';
+  var row=h('div',{class:'small',style:'display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:10px 0;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)'});
+  row.appendChild(h('span',{style:'display:inline-flex;align-items:center'},dot,h('b',null,LIVE?'Ao vivo':'Sem conexão'),h('span',{class:'muted'},EDIT?' · marcação liberada':(LIVE?' · só acompanhando':' · último estado recebido'))));
+  if(EDIT)row.appendChild(h('button',{type:'button',style:sm+';margin-left:auto',onclick:lock},'Bloquear'));
+  else if(!UNL)row.appendChild(h('button',{type:'button',style:sm+';margin-left:auto',onclick:function(){UNL=true;render();var el=$('pin');if(el)el.focus()}},'Tenho o PIN'));
+  if(!EDIT&&UNL){var inp=h('input',{id:'pin',class:'filter',type:'password',inputmode:'numeric',autocomplete:'off',placeholder:'PIN',style:'margin:0;flex:1 1 90px;min-width:0;padding:7px 10px'});inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')unlock()});
+    row.appendChild(h('div',{style:'display:flex;gap:6px;width:100%'},inp,h('button',{type:'button',style:sm,onclick:unlock},'Liberar'),h('button',{type:'button',style:sm,onclick:function(){UNL=false;render()}},'Cancelar')))}
+  if(WERR)row.appendChild(h('div',{style:'width:100%;color:var(--warn)'},WERR));
+  return row}
 function onRemote(path,data,merge){
   if(path==='/'){if(merge){for(var k in (data||{})){if(!PEND.hasOwnProperty(k)){if(data[k]===null)delete REM[k];else REM[k]=data[k]}}}
     else{var n=data||{};for(var k2 in PEND)n[k2]=PEND[k2];REM=n}}
