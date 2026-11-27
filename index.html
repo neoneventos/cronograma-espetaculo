@@ -573,9 +573,9 @@ body{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px
 .pdfwrap .muted{font-size:11px}
 a.pdfb{display:inline-block;text-decoration:none;line-height:1.3;font-family:inherit}
 .pdfb:disabled{opacity:.6}
-.pbtn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;cursor:pointer}
-.presrow{margin-top:10px}
-#presbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.vsw{display:flex;gap:4px;margin-top:10px;padding:3px;border:1px solid var(--line);background:var(--surface);border-radius:999px}
+.vsw button{flex:1;min-width:0;border:0;background:transparent;color:var(--muted);border-radius:999px;padding:8px 10px;font:600 13px inherit;font-family:inherit;cursor:pointer}
+.vsw button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 @media print{
   @page{size:A4;margin:12mm}
   html,body{background:#fff!important}
@@ -606,7 +606,7 @@ a.pdfb{display:inline-block;text-decoration:none;line-height:1.3;font-family:inh
   </div>
   <div class="search"><button type="button" id="qx" class="qx" aria-label="Limpar busca" hidden>×</button><input id="q" type="search" placeholder="Buscar música, pessoa, banda" autocomplete="off" aria-label="Buscar"><details class="filt"><summary>Filtros</summary><div class="fgrid"><select id="fs" aria-label="Sessão"></select><select id="fi" aria-label="Instrumento"></select><select id="fp" aria-label="Pessoa"></select><select id="fd" aria-label="Detalhe"></select><button id="fclear" type="button" hidden>Limpar</button></div></details><div class="results" id="res" hidden></div></div>
   
-  <div class="presrow"><button type="button" id="presbtn" class="pbtn" aria-pressed="false">Visão apresentadores</button></div>
+  <div class="vsw" role="group" aria-label="Tipo de visão"><button type="button" id="vtec" aria-pressed="true">Visão técnica</button><button type="button" id="vpres" aria-pressed="false">Visão apresentadores</button></div>
 </header>
 <div id="pfil" class="printonly"></div>
 <main id="view"></main>
@@ -790,7 +790,8 @@ function exportPdf(){
     setTimeout(function(){document.body.removeChild(a)},4000);fim('PDF baixado.')
   },function(){fim('N\u00e3o consegui gerar o PDF.')})
 }
-$('presbtn').addEventListener('click',function(){PRES=!PRES;this.setAttribute('aria-pressed',String(PRES));search()});
+function setPres(v){if(PRES===v)return;PRES=v;$('vtec').setAttribute('aria-pressed',String(!v));$('vpres').setAttribute('aria-pressed',String(v));search()}
+$('vtec').addEventListener('click',function(){setPres(false)});$('vpres').addEventListener('click',function(){setPres(true)});
 function qxs(){$('qx').hidden=!$('q').value}
 $('q').addEventListener('input',function(){qxs();search()});$('q').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('q').blur()}});$('qx').addEventListener('click',function(){$('q').value='';qxs();search();$('q').focus()});initFilters();
 countdown();
