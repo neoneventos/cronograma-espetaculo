@@ -313,7 +313,7 @@ function vEnergia(){var m=$('main'),eq=tab('energia','Equipamentos por régua'),
     var meter=h('div',{style:'display:flex;gap:4px;margin:8px 0 10px;align-items:center'});
     for(var i=0;i<CAP;i++)meter.appendChild(h('span',{style:'flex:1;height:8px;border-radius:3px;background:'+(i<used?COL[ri%3]:'var(--line)')}));
     var body=h('div',{style:'padding:2px 12px 10px'},
-      h('div',{class:'small muted'},r[3]+' · liga na tomada '+r[4]+(r[5]?' ('+r[5].toLowerCase()+')':'')),
+      h('div',{class:'small muted'},r[3]+' · liga na tomada '+r[4]),
       meter,
       h('div',{class:'small',style:'display:flex;justify-content:space-between;margin:-4px 0 6px'},h('span',{class:'muted'},used+' de '+CAP+' plugues'),full?h('span',{class:'chip warn',style:'margin:0'},'cheia'):null));
     vis.forEach(function(e){body.appendChild(h('div',{style:'padding:7px 0;border-top:1px solid var(--line)'},
@@ -331,7 +331,7 @@ function vEnergia(){var m=$('main'),eq=tab('energia','Equipamentos por régua'),
   if(tv.length){
     m.appendChild(h('div',{class:'sec-title',style:'margin:18px 0 6px'},h('h2',null,'Tomadas do palco')));
     var wg=h('div',{style:'display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px'});
-    walls.forEach(function(w){var col=h('div',{style:'display:flex;flex-direction:column;gap:6px;min-width:0'},h('div',{class:'small muted',style:'font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11px'},'Parede '+w.toLowerCase()));
+    walls.forEach(function(w){var col=h('div',{style:'display:flex;flex-direction:column;gap:6px;min-width:0'},h('div',{class:'small muted',style:'font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11px'},w));
       tv.filter(function(r){return r[1]===w}).forEach(function(r){var inuse=r[3]&&r[3]!=='Livre',ci=rmap[r[3]];
         col.appendChild(h('div',{style:'padding:8px 10px;border-radius:10px;'+(inuse?'border:1px solid '+COL[ci%3]+';background:'+SOFT[ci%3]:'border:1px dashed var(--line);background:transparent')},
           h('div',{style:'font:700 15px var(--f-head)'},r[0]),h('div',{class:'small '+(inuse?'':'muted'),style:inuse?'color:'+COL[ci%3]+';font-weight:600':''},inuse?'Régua '+r[3]:'Livre')))});
