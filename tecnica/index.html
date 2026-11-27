@@ -392,14 +392,17 @@ function vCasa(){var m=$('main'),s=SEC.casa;if(!s)return;var t=s.tables[0];
   function use(r){var p=r[3];if(/^Casa complementa/.test(p))return['Complementa','ok'];if(/^Casa/.test(p))return['Vamos usar','ok'];if(/^Neon \(principal\)/.test(p))return['Backup',''];if(/definir/.test(p))return['A definir','warn'];if(/Opcional/.test(p))return['Opcional',''];if(/^Neon \(copos\)/.test(p))return['Vamos usar','ok'];return[p.replace(/ \(.*/,''),'']}
   m.appendChild(h('div',{class:'small muted',style:'margin:4px 0 6px'},'Só o que o teatro tem e como vamos usar. O que a Neon leva está no Checklist. Visita de 04/11.'));
   var used={};
+  var names=GR.map(function(g){return g[0]});
+  m.appendChild(h('div',{class:'tbar',style:'margin:6px 0 10px'},h('button',{type:'button',onclick:function(){names.forEach(function(n){FOLD['casa_'+n]=true});render()}},'Expandir tudo'),h('button',{type:'button',onclick:function(){names.forEach(function(n){FOLD['casa_'+n]=false});render()}},'Recolher tudo')));
   GR.forEach(function(g){var rs=rows.filter(function(r){return !used[r[0]]&&g[1].test(r[0])});rs.forEach(function(r){used[r[0]]=1});if(!rs.length)return;
-    m.appendChild(h('div',{class:'sec-title',style:'margin:18px 0 2px;padding-bottom:6px;border-bottom:2px solid var(--line)'},h('h2',{style:'margin:0'},g[0])));
+    var body=h('div',null);
     rs.forEach(function(r){var u=use(r);
-      m.appendChild(h('details',{style:'border-bottom:1px solid var(--line)'},
+      body.appendChild(h('details',{style:'border-bottom:1px solid var(--line)'},
         h('summary',{style:'list-style:none;cursor:pointer;padding:9px 2px'},
           h('div',{style:'display:flex;justify-content:space-between;align-items:flex-start;gap:8px'},h('b',null,r[0]),h('span',{class:'chip '+u[1],style:'margin:0;white-space:nowrap'},u[0])),
           h('div',{class:'small muted',style:'margin-top:1px'},r[1]),r[4]?h('div',{class:'small',style:'margin-top:3px;color:var(--accent)'},'+ nota'):null),
-        r[4]?h('div',{class:'small muted',style:'padding:0 2px 9px'},r[4]):null))})});
+        r[4]?h('div',{class:'small muted',style:'padding:0 2px 9px'},r[4]):null))});
+    m.appendChild(fold('casa_'+g[0],g[0],rs.length+(rs.length===1?' item':' itens'),body,false))});
   if(!rows.length)m.appendChild(none())}
 function vCob(){var m=$('main'),s=SEC.cobertura;if(!s)return;var t=s.tables[0];m.appendChild(h('div',{class:'box'},s.intro));
   var f=flt(),rows=t.rows.filter(function(r){return match([r[0],r[2],r[19]||''])});if(!rows.length){m.appendChild(none());return}
