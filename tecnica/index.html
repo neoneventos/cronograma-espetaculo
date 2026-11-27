@@ -331,7 +331,7 @@ function lockBox(){
   var dot=h('span',{style:'color:'+(LIVE?'var(--ok)':'var(--muted)')+';font-size:14px;margin-right:6px'},LIVE?'●':'○');
   var sm='font:600 12px var(--f-body);padding:5px 10px;border-radius:99px';
   var row=h('div',{class:'small',style:'display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:10px 0;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)'});
-  row.appendChild(h('span',{style:'display:inline-flex;align-items:center'},dot,h('b',null,LIVE?'Ao vivo':'Sem conexão'),h('span',{class:'muted'},EDIT?' · marcação liberada':(LIVE?' · só acompanhando':' · último estado recebido'))));
+  row.appendChild(h('span',{style:'display:inline-flex;align-items:center'},dot,h('b',null,LIVE?'Ao vivo':'Sem conexão'),h('span',{class:'muted'},EDIT?'\u00a0· marcação liberada':(LIVE?'\u00a0· só acompanhando':'\u00a0· último estado recebido'))));
   if(EDIT)row.appendChild(h('button',{type:'button',style:sm+';margin-left:auto',onclick:lock},'Bloquear'));
   else if(!UNL)row.appendChild(h('button',{type:'button',style:sm+';margin-left:auto',onclick:function(){UNL=true;render();var el=$('pin');if(el)el.focus()}},'Tenho o PIN'));
   if(!EDIT&&UNL){var inp=h('input',{id:'pin',class:'filter',type:'password',inputmode:'numeric',autocomplete:'off',placeholder:'PIN',style:'margin:0;flex:1 1 90px;min-width:0;padding:7px 10px'});inp.addEventListener('keydown',function(ev){if(ev.key==='Enter')unlock()});
