@@ -294,19 +294,58 @@ function vCabos(){var m=$('main'),t=tab('cabos','Ligações'),tt=tab('cabos','To
     m.appendChild(fold('cab_'+g,g,groups[g].length+(groups[g].length===1?' ligação':' ligações'),rows,false))})}
 /* ---------- Energia ---------- */
 function vEnergia(){var m=$('main'),eq=tab('energia','Equipamentos por régua'),rg=tab('energia','Réguas'),tm=tab('energia','Tomadas do palco (9)'),mt=tab('energia','Materiais elétricos');if(!eq)return;
-  m.appendChild(h('div',{class:'box'},'Tomadas do palco: 9 (4 esquerda, 2 fundo, 3 direita), 110/127 V a confirmar com o testador. Total estimado: 885 W.'));
-  var g=h('div',{class:'grid'});
-  rg.rows.forEach(function(r){var items=eq.rows.filter(function(e){return e[5]===r[0]});
-    if(!match(r.concat(items.map(function(e){return e[1]}))))return;
-    g.appendChild(h('div',{class:'card'},h('div',{class:'sec-title',style:'margin:0'},h('h2',null,'Régua '+r[0]),h('span',{class:'chip ok'},r[1]+' plugues · '+r[2]+' W')),
-      h('div',{class:'small muted'},r[3]+' → tomada '+r[4]+(r[5]?' · '+r[5]:'')),
-      h('div',{class:'list',style:'margin-top:8px'},items.map(function(e){return h('div',{class:'small'},h('b',null,e[1]),' · '+e[3]+' W'+(e[6]?' · '+e[6]:''))}))))});
-  m.appendChild(g);
-  m.appendChild(h('div',{class:'sec-title'},h('h2',null,'Tomadas do palco')));
-  var tg=h('div',{class:'grid'});tm.rows.forEach(function(r){if(!match(r))return;tg.appendChild(h('div',{class:'card'},h('h3',null,r[0]+' · '+r[1]),h('div',{class:'small muted'},r[3]==='Livre'?'Livre':'Régua '+r[3]),r[4]?h('div',{class:'small'},'Distância: '+r[4]+' m'):h('div',{class:'small muted'},'Medir distância e disjuntor na visita')))});
-  m.appendChild(tg);
-  m.appendChild(h('div',{class:'sec-title'},h('h2',null,'Materiais')));
-  m.appendChild(h('div',{class:'card'},mt.rows.map(function(r){return h('div',{class:'small',style:'padding:4px 0'},h('b',null,r[1]+'× '+r[0]),r[2]?' · '+r[2]:'')})))}
+  var COL=['var(--g3)','var(--g2)','var(--g1)'],SOFT=['var(--g3s)','var(--g2s)','var(--g1s)'];
+  var capm=/\((\d+) tomadas\)/.exec(mt&&mt.rows[0]?mt.rows[0][0]:''),CAP=capm?+capm[1]:6;
+  var items=eq.rows.filter(function(e){return e[1]&&e[1]!=='Total'});
+  var tot=0,plugs=0;items.forEach(function(e){tot+=(+e[3]||0);plugs+=(+e[2]||0)});
+  var usedOut=tm.rows.filter(function(r){return r[3]&&r[3]!=='Livre'}).length;
+  function stat(v,l){return h('div',{style:'background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0'},h('div',{style:'font:700 22px var(--f-head);font-variant-numeric:tabular-nums;line-height:1.1'},v),h('div',{class:'small muted',style:'margin-top:2px'},l))}
+  m.appendChild(h('div',{style:'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:2px 0 6px'},
+    stat(tot+' W','Carga total estimada'),stat(String(plugs),'Plugues em uso'),stat(String(rg.rows.length),'Réguas de '+CAP+' tomadas'),stat(usedOut+' de '+tm.rows.length,'Tomadas do palco em uso')));
+  m.appendChild(h('div',{class:'small muted',style:'margin:0 0 4px'},'Tensão do palco: 110/127 V, a confirmar com o testador.'));
+  /* distribuicao por regua */
+  var names=rg.rows.map(function(r){return 'en_'+r[0]});
+  m.appendChild(h('div',{class:'sec-title',style:'margin:16px 0 6px'},h('h2',null,'Distribuição por régua')));
+  m.appendChild(h('div',{class:'tbar',style:'margin:0 0 8px'},h('button',{type:'button',onclick:function(){names.forEach(function(n){FOLD[n]=true});render()}},'Expandir tudo'),h('button',{type:'button',onclick:function(){names.forEach(function(n){FOLD[n]=false});render()}},'Recolher tudo')));
+  var any=false;
+  rg.rows.forEach(function(r,ri){var its=items.filter(function(e){return e[5]===r[0]});var vis=its.filter(function(e){return match([e[1],e[6]||'',r[0],r[3]])});if(!vis.length)return;any=true;
+    var used=+r[1]||0,full=used>=CAP;
+    var meter=h('div',{style:'display:flex;gap:4px;margin:8px 0 10px;align-items:center'});
+    for(var i=0;i<CAP;i++)meter.appendChild(h('span',{style:'flex:1;height:8px;border-radius:3px;background:'+(i<used?COL[ri%3]:'var(--line)')}));
+    var body=h('div',{style:'padding:2px 12px 10px'},
+      h('div',{class:'small muted'},r[3]+' · liga na tomada '+r[4]+(r[5]?' ('+r[5].toLowerCase()+')':'')),
+      meter,
+      h('div',{class:'small',style:'display:flex;justify-content:space-between;margin:-4px 0 6px'},h('span',{class:'muted'},used+' de '+CAP+' plugues'),full?h('span',{class:'chip warn',style:'margin:0'},'cheia'):null));
+    vis.forEach(function(e){body.appendChild(h('div',{style:'padding:7px 0;border-top:1px solid var(--line)'},
+      h('div',{style:'display:flex;justify-content:space-between;gap:10px'},h('span',null,e[1]),h('b',{style:'font-variant-numeric:tabular-nums;white-space:nowrap'},e[3]+' W')),
+      e[6]?h('div',{class:'small muted',style:'margin-top:2px'},e[6]):null))});
+    var d=fold('en_'+r[0],'Régua '+r[0],used+'/'+CAP+' · '+r[2]+' W',body,false,full?'warn':null);
+    d.style.borderLeft='4px solid '+COL[ri%3];m.appendChild(d)});
+  var semTom=items.filter(function(e){return !e[5]||e[5]==='-'});
+  eq.rows.filter(function(e){return e[1]&&e[1]!=='Total'&&(!e[5]||e[5]==='-')}).forEach(function(e){if(!match([e[1],e[6]||'']))return;any=true;
+    m.appendChild(h('div',{style:'padding:10px 12px;border:1px dashed var(--line);border-radius:12px;margin-bottom:10px'},h('div',{class:'small muted'},'Sem tomada do palco'),h('div',{style:'margin-top:2px'},h('b',null,e[1]),e[6]?' · '+e[6]:'')))});
+  if(!any)m.appendChild(none());
+  /* tomadas */
+  var walls=['Esquerda','Fundo','Direita'],rmap={};rg.rows.forEach(function(r,i){rmap[r[0]]=i});
+  var tv=tm.rows.filter(function(r){return match(r)});
+  if(tv.length){
+    m.appendChild(h('div',{class:'sec-title',style:'margin:18px 0 6px'},h('h2',null,'Tomadas do palco')));
+    var wg=h('div',{style:'display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px'});
+    walls.forEach(function(w){var col=h('div',{style:'display:flex;flex-direction:column;gap:6px;min-width:0'},h('div',{class:'small muted',style:'font-weight:600;text-transform:uppercase;letter-spacing:.04em;font-size:11px'},'Parede '+w.toLowerCase()));
+      tv.filter(function(r){return r[1]===w}).forEach(function(r){var inuse=r[3]&&r[3]!=='Livre',ci=rmap[r[3]];
+        col.appendChild(h('div',{style:'padding:8px 10px;border-radius:10px;'+(inuse?'border:1px solid '+COL[ci%3]+';background:'+SOFT[ci%3]:'border:1px dashed var(--line);background:transparent')},
+          h('div',{style:'font:700 15px var(--f-head)'},r[0]),h('div',{class:'small '+(inuse?'':'muted'),style:inuse?'color:'+COL[ci%3]+';font-weight:600':''},inuse?'Régua '+r[3]:'Livre')))});
+      wg.appendChild(col)});
+    m.appendChild(wg);
+    m.appendChild(h('div',{class:'small muted',style:'margin-top:8px'},'Disjuntor e distância de cada tomada: medir no local.'))}
+  /* materiais */
+  var mv=mt.rows.filter(function(r){return match(r)});
+  if(mv.length){
+    m.appendChild(h('div',{class:'sec-title',style:'margin:18px 0 2px;padding-bottom:6px;border-bottom:2px solid var(--line)'},h('h2',{style:'margin:0'},'Materiais elétricos')));
+    mv.forEach(function(r){m.appendChild(h('div',{style:'display:flex;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line)'},
+      h('b',{style:'min-width:34px;font:700 16px var(--f-head);color:var(--accent);font-variant-numeric:tabular-nums'},r[1]+'×'),
+      h('div',{style:'min-width:0'},h('div',null,r[0]),r[2]?h('div',{class:'small muted',style:'margin-top:2px'},r[2]):null)))})}}
+
 /* ---------- Checklists ---------- */
 var WERR='',EDIT=false,PIN='',REM={},PEND={},BASE={},LIVE=false,SYNC=false,FB='https://neoneventos-tecnica-default-rtdb.firebaseio.com';
 CHK.forEach(function(i){BASE[i.id]=!!i.done});
