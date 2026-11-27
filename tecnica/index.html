@@ -390,7 +390,7 @@ function vCasa(){var m=$('main'),s=SEC.casa;if(!s)return;var t=s.tables[0];
   var rows=t.rows.filter(function(r){return r[1]&&r[1]!=='Nada'&&match(r)});
   var GR=[['Som',/PA|Mesa|Monitor|Microfone|Direct|Pedestais|Técnico de som/],['Palco e energia',/Tomadas/],['Luz e visual',/Ilumina|Cortina|Projetor/],['Sala e apoio',/Água|Ar-cond|GCM/]];
   function use(r){var p=r[3];if(/^Casa complementa/.test(p))return['Complementa','ok'];if(/^Casa/.test(p))return['Vamos usar','ok'];if(/^Neon \(principal\)/.test(p))return['Backup',''];if(/definir/.test(p))return['A definir','warn'];if(/Opcional/.test(p))return['Opcional',''];if(/^Neon \(copos\)/.test(p))return['Vamos usar','ok'];return[p.replace(/ \(.*/,''),'']}
-  m.appendChild(h('div',{class:'small muted',style:'margin:4px 0 6px'},'Só o que o teatro tem e como vamos usar. O que a Neon leva está no Checklist. Visita de 04/11.'));
+  m.appendChild(h('div',{class:'small muted',style:'margin:4px 0 6px'},'Só o que o teatro tem e como vamos usar. O que a Neon leva está no Checklist.'));
   var used={};
   var names=GR.map(function(g){return g[0]});
   m.appendChild(h('div',{class:'tbar',style:'margin:6px 0 10px'},h('button',{type:'button',onclick:function(){names.forEach(function(n){FOLD['casa_'+n]=true});render()}},'Expandir tudo'),h('button',{type:'button',onclick:function(){names.forEach(function(n){FOLD['casa_'+n]=false});render()}},'Recolher tudo')));
