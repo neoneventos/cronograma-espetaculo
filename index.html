@@ -706,7 +706,7 @@ function timelineCol(key,title){var L=sess(key);if(FM)L=L.filter(function(x){ret
     d.appendChild(body);li.appendChild(d);ul.appendChild(li)});col.appendChild(ul);return col}
 function legend(){return h('div',{class:'legend'},h('span',{text:'Legenda:'}),h('span',{class:'tag kit',text:'Kit · Guitarra 1/2'}),h('span',{class:'tag type',text:'Violão Nylon / Aço'}),h('span',{class:'tag seat',text:'Sentado, apoio de pé'}),h('span',{class:'tag capo',text:'Capotraste'}),h('span',{class:'tag kb',text:'Teclado · timbre'}),h('span',{class:'tag mic',text:'Mic do backing'}),h('span',{class:'tag nomic',text:'Sem microfone'}),h('span',{text:'Cada pessoa tem a sua linha, com o seu equipamento.'}))}
 function viewCrono(){var v=$('view');v.textContent='';
-    var cs=[timelineCol('kids','Kids · 14h'),timelineCol('ta','Teens & Adultos · 17h')].filter(Boolean);cs.forEach(function(c){c.style.marginBottom='10px'});var cw=h('div',{class:'cols'});cs.forEach(function(c){cw.appendChild(c)});v.appendChild(cw)}
+    var cs=[timelineCol('kids','Kids · 14h'),timelineCol('ta','Teens & Adultos · 17h')].filter(Boolean);cs.forEach(function(c){c.style.marginBottom='10px'});if(PRES&&!FM)v.appendChild(h('div',{class:'sumrow',style:'margin-bottom:10px'},h('div',{class:'muted',style:'font-size:12px',text:'Visão apresentadores: sem informações técnicas.'}),pdfCtl()));var cw=h('div',{class:'cols'});cs.forEach(function(c){cw.appendChild(c)});v.appendChild(cw)}
 /* sessões */
 function viewSess(key){var v=$('view');v.textContent='';
   var list=sess(key);
@@ -780,8 +780,7 @@ function makePdf(F,desc){
   var slug=(desc||'completo').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'filtro';
   return {blob:doc.output('blob'),fname:'Espetaculo-Neon-'+slug+'.pdf'}
 }
-function pdfCtl(){return null}
-function pdfCtl_old(){var m=h('span',{id:'pdfmsg',class:'muted'});return h('span',{class:'pdfwrap'},m,h('button',{type:'button',class:'pdfb',text:'Exportar PDF',onclick:exportPdf}))}
+function pdfCtl(){var m=h('span',{id:'pdfmsg',class:'muted'});return h('span',{class:'pdfwrap'},m,h('button',{type:'button',class:'pdfb',text:'Exportar PDF',onclick:exportPdf}))}
 function exportPdf(){
   var b=document.querySelector('button.pdfb');
   function fim(t){pdfMsg(t);if(b)b.disabled=false}
